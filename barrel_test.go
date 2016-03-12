@@ -5,50 +5,33 @@ import (
 	"testing"
 )
 
-type Beril struct {
-	Nates uint32
-}
-
 type Packet struct {
-	Opcode uint64
-	Test   string
-	Beril  interface{}
-	Bit    []byte
+	ID    int32
+	Level uint32
+	HP    uint32
 }
 
 func (p *Packet) Default() {
-	p.Opcode = 139
-	p.Test = "Hello, world!"
-	p.Beril = &Beril{6}
-	p.Bit = []byte{0x01, 0x02, 0x03, 0x04, 0x05}
+	p.ID = 2
+	p.Level = 3
+	p.HP = 4
 }
 
 func (p Packet) Check(stats *Stats) bool {
 	switch stats.NameField {
-	case "Opcode":
-		return true
-	case "Test":
-		return true
-	case "Beril":
-		return true
-	case "Nates":
-		return true
-	case "Bit":
-		stats.LenSlice = 5
-
-		return true
-	default:
-		return false
+	case "ID":
+		stats.Endian = BigEndian
+	case "Level":
+	case "HP":
 	}
+
+	return true
 }
 
 func TestBarrelPack(t *testing.T) {
 	barrel := NewBarrel()
 	packet := &Packet{}
 	load := barrel.Load(packet, []byte{}, true)
-
-	packet.Test = "O!"
-	packet.Beril = &Beril{6}
 
 	err := barrel.Pack(load)
 	if err != nil {
@@ -60,8 +43,8 @@ func TestBarrelPack(t *testing.T) {
 
 func TestBarrelUnpack(t *testing.T) {
 	barrel := NewBarrel()
-	packet := &Packet{Beril: &Beril{}}
-	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x06, 0x01, 0x02, 0x03, 0x04, 0x05}, false)
+	packet := &Packet{}
+	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04}, false)
 
 	err := barrel.Unpack(load)
 	if err != nil {
@@ -74,6 +57,7 @@ func TestBarrelUnpack(t *testing.T) {
 func BenchmarkBarrelPack(b *testing.B) {
 	barrel := NewBarrel()
 	packet := &Packet{}
+
 	load := barrel.Load(packet, []byte{}, true)
 
 	for i := 0; i < b.N; i++ {
@@ -84,7 +68,7 @@ func BenchmarkBarrelPack(b *testing.B) {
 func BenchmarkBarrelUnpack(b *testing.B) {
 	barrel := NewBarrel()
 	packet := &Packet{}
-	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00}, false)
+	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x04}, false)
 
 	for i := 0; i < b.N; i++ {
 		barrel.Unpack(load)
