@@ -24,7 +24,7 @@ func (b *Barrel) Unpack(value reflect.Value) error {
 
 			b.numField = i
 
-			err := b.Pack(value.Field(i))
+			err := b.Unpack(value.Field(i))
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,7 @@ func (b *Barrel) Unpack(value reflect.Value) error {
 
 		value.SetBool(valueFrom)
 	case reflect.Interface:
-		err := b.Pack(value.Elem())
+		err := b.Unpack(reflect.Indirect(value.Elem()))
 		if err != nil {
 			return err
 		}

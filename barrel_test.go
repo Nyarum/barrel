@@ -18,6 +18,7 @@ type Packet struct {
 func (p *Packet) Default() {
 	p.Opcode = 139
 	p.Test = "Hello, world!"
+	p.Beril = &Beril{6}
 }
 
 func (p Packet) Check(name string) bool {
@@ -38,7 +39,7 @@ func (p Packet) Check(name string) bool {
 func TestBarrelPack(t *testing.T) {
 	barrel := NewBarrel()
 	packet := &Packet{}
-	load := barrel.Load(packet, []byte{})
+	load := barrel.Load(packet, []byte{}, true)
 
 	packet.Test = "O!"
 	packet.Beril = &Beril{6}
@@ -54,7 +55,7 @@ func TestBarrelPack(t *testing.T) {
 func TestBarrelUnpack(t *testing.T) {
 	barrel := NewBarrel()
 	packet := &Packet{Beril: &Beril{}}
-	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00})
+	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x06}, false)
 
 	err := barrel.Unpack(load)
 	if err != nil {
@@ -67,7 +68,7 @@ func TestBarrelUnpack(t *testing.T) {
 func BenchmarkBarrelPack(b *testing.B) {
 	barrel := NewBarrel()
 	packet := &Packet{}
-	load := barrel.Load(packet, []byte{})
+	load := barrel.Load(packet, []byte{}, true)
 
 	for i := 0; i < b.N; i++ {
 		barrel.Pack(load)
@@ -77,7 +78,7 @@ func BenchmarkBarrelPack(b *testing.B) {
 func BenchmarkBarrelUnpack(b *testing.B) {
 	barrel := NewBarrel()
 	packet := &Packet{}
-	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00})
+	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00}, false)
 
 	for i := 0; i < b.N; i++ {
 		barrel.Unpack(load)

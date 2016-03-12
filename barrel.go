@@ -19,8 +19,10 @@ func NewBarrel() *Barrel {
 	return &Barrel{}
 }
 
-func (b *Barrel) Load(object Unit, buffer []byte) reflect.Value {
-	object.Default()
+func (b *Barrel) Load(object Unit, buffer []byte, def bool) reflect.Value {
+	if def {
+		object.Default()
+	}
 
 	b.Object = object
 	b.processor = NewProcessor(buffer)
