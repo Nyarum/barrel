@@ -49,7 +49,7 @@ func (b *Barrel) Pack(value reflect.Value) error {
 	case reflect.Bool:
 		b.processor.WriteBool(value.Bool())
 	case reflect.Interface:
-		err := b.Pack(value.Elem())
+		err := b.Pack(reflect.Indirect(value.Elem()))
 		if err != nil {
 			return err
 		}

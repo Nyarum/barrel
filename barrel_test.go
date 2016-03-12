@@ -5,9 +5,14 @@ import (
 	"testing"
 )
 
+type Beril struct {
+	Nates uint32
+}
+
 type Packet struct {
 	Opcode uint64
 	Test   string
+	Beril  interface{}
 }
 
 func (p *Packet) Default() {
@@ -21,7 +26,9 @@ func (p Packet) Check(name string) bool {
 		return true
 	case "Test":
 		return true
-	case "Ops":
+	case "Beril":
+		return true
+	case "Nates":
 		return true
 	default:
 		return false
@@ -34,6 +41,7 @@ func TestBarrelPack(t *testing.T) {
 	load := barrel.Load(packet, []byte{})
 
 	packet.Test = "O!"
+	packet.Beril = &Beril{6}
 
 	err := barrel.Pack(load)
 	if err != nil {
@@ -45,7 +53,7 @@ func TestBarrelPack(t *testing.T) {
 
 func TestBarrelUnpack(t *testing.T) {
 	barrel := NewBarrel()
-	packet := &Packet{}
+	packet := &Packet{Beril: &Beril{}}
 	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00})
 
 	err := barrel.Unpack(load)
