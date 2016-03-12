@@ -90,6 +90,11 @@ func (b *Barrel) Unpack(value reflect.Value) error {
 		b.processor.ReadBool(&valueFrom)
 
 		value.SetBool(valueFrom)
+	case reflect.Interface:
+		err := b.Pack(value.Elem())
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("Type of object is incorrect.. It is - %v", value.Kind())
 	}

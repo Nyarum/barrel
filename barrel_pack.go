@@ -48,6 +48,11 @@ func (b *Barrel) Pack(value reflect.Value) error {
 		b.processor.WriteBytes(value.Bytes())
 	case reflect.Bool:
 		b.processor.WriteBool(value.Bool())
+	case reflect.Interface:
+		err := b.Pack(value.Elem())
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("Type of object is incorrect.. It is - %v", value.Kind())
 	}

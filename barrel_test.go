@@ -21,7 +21,7 @@ func (p Packet) Check(name string) bool {
 		return true
 	case "Test":
 		return true
-	case "Be":
+	case "Ops":
 		return true
 	default:
 		return false
@@ -46,7 +46,7 @@ func TestBarrelPack(t *testing.T) {
 func TestBarrelUnpack(t *testing.T) {
 	barrel := NewBarrel()
 	packet := &Packet{}
-	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00})
+	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x00})
 
 	err := barrel.Unpack(load)
 	if err != nil {
