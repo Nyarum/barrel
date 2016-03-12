@@ -11,6 +11,7 @@ type (
 	Stats struct {
 		LenSlice  int
 		NameField string
+		Endian    int
 	}
 
 	Barrel struct {

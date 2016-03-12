@@ -16,9 +16,9 @@ func (b *Barrel) Pack(value reflect.Value) error {
 				continue
 			}
 
-			if valueType.Tag.Get("endian") == "0" {
+			if b.Stats.Endian == 1 {
 				b.processor.SetEndian(BigEndian)
-			} else if valueType.Tag.Get("endian") == "1" {
+			} else if b.Stats.Endian == 0 {
 				b.processor.SetEndian(LittleEndian)
 			}
 
