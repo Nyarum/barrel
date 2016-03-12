@@ -5,13 +5,19 @@ import "reflect"
 type (
 	Unit interface {
 		Default()
-		Check(string) bool
+		Check(*Stats) bool
+	}
+
+	Stats struct {
+		LenSlice  int
+		NameField string
 	}
 
 	Barrel struct {
 		Object    Unit
 		numField  int
 		processor *Processor
+		Stats     Stats
 	}
 )
 

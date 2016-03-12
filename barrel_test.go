@@ -13,16 +13,18 @@ type Packet struct {
 	Opcode uint64
 	Test   string
 	Beril  interface{}
+	Bit    []byte
 }
 
 func (p *Packet) Default() {
 	p.Opcode = 139
 	p.Test = "Hello, world!"
 	p.Beril = &Beril{6}
+	p.Bit = []byte{0x01, 0x02, 0x03, 0x04, 0x05}
 }
 
-func (p Packet) Check(name string) bool {
-	switch name {
+func (p Packet) Check(stats *Stats) bool {
+	switch stats.NameField {
 	case "Opcode":
 		return true
 	case "Test":
@@ -30,6 +32,10 @@ func (p Packet) Check(name string) bool {
 	case "Beril":
 		return true
 	case "Nates":
+		return true
+	case "Bit":
+		stats.LenSlice = 5
+
 		return true
 	default:
 		return false
@@ -55,7 +61,7 @@ func TestBarrelPack(t *testing.T) {
 func TestBarrelUnpack(t *testing.T) {
 	barrel := NewBarrel()
 	packet := &Packet{Beril: &Beril{}}
-	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x06}, false)
+	load := barrel.Load(packet, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x8b, 0x00, 0x03, 0x4f, 0x21, 0x00, 0x00, 0x00, 0x00, 0x06, 0x01, 0x02, 0x03, 0x04, 0x05}, false)
 
 	err := barrel.Unpack(load)
 	if err != nil {

@@ -3,7 +3,6 @@ package barrel
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 )
 
 func (b *Barrel) Unpack(value reflect.Value) error {
@@ -12,7 +11,8 @@ func (b *Barrel) Unpack(value reflect.Value) error {
 		for i := 0; i < value.NumField(); i++ {
 			valueType := value.Type().Field(i)
 
-			if !b.Object.Check(valueType.Name) {
+			b.Stats.NameField = valueType.Name
+			if !b.Object.Check(&b.Stats) {
 				continue
 			}
 
@@ -76,13 +76,8 @@ func (b *Barrel) Unpack(value reflect.Value) error {
 
 		value.SetString(valueFrom)
 	case reflect.Slice:
-		getLen, err := strconv.Atoi(value.Type().Field(b.numField).Tag.Get("len"))
-		if err != nil {
-			return err
-		}
-
 		var valueFrom []byte
-		b.processor.ReadBytes(&valueFrom, getLen)
+		b.processor.ReadBytes(&valueFrom, b.Stats.LenSlice)
 
 		value.SetBytes(valueFrom)
 	case reflect.Bool:

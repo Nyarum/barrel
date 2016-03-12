@@ -11,7 +11,8 @@ func (b *Barrel) Pack(value reflect.Value) error {
 		for i := 0; i < value.NumField(); i++ {
 			valueType := value.Type().Field(i)
 
-			if !b.Object.Check(valueType.Name) {
+			b.Stats.NameField = valueType.Name
+			if !b.Object.Check(&b.Stats) {
 				continue
 			}
 
