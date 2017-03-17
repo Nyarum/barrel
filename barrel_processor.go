@@ -46,7 +46,7 @@ func (p *Processor) Bytes() []byte {
 	return p.buffer.Bytes()
 }
 
-// Bytes method for reset buffer
+// Reset method for reset buffer
 func (p *Processor) Reset() {
 	p.buffer.Reset()
 }
