@@ -486,6 +486,12 @@ func (p *Processor) WriteString(value string) *Processor {
 	return p
 }
 
+func (p *Processor) WriteByte(value byte) *Processor {
+	p.buffer.WriteByte(value)
+
+	return p
+}
+
 func (p *Processor) WriteBytes(value []byte) *Processor {
 	p.buffer.Write(value)
 
