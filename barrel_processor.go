@@ -191,9 +191,9 @@ func (p *Processor) ReadFloat32(value *float32) *Processor {
 	}
 
 	if p.Endian() == LittleEndian {
-		(*value) = math.Float32frombits(binary.BigEndian.Uint32(bufFloat32))
-	} else {
 		(*value) = math.Float32frombits(binary.LittleEndian.Uint32(bufFloat32))
+	} else {
+		(*value) = math.Float32frombits(binary.BigEndian.Uint32(bufFloat32))
 	}
 
 	return p
@@ -207,9 +207,9 @@ func (p *Processor) ReadFloat64(value *float64) *Processor {
 	}
 
 	if p.Endian() == LittleEndian {
-		(*value) = math.Float64frombits(binary.BigEndian.Uint64(bufFloat64))
-	} else {
 		(*value) = math.Float64frombits(binary.LittleEndian.Uint64(bufFloat64))
+	} else {
+		(*value) = math.Float64frombits(binary.BigEndian.Uint64(bufFloat64))
 	}
 
 	return p
@@ -231,6 +231,30 @@ func (p *Processor) ReadString(value *string) *Processor {
 
 	bufString := make([]byte, lnString)
 	if bufString = p.buffer.Next(int(lnString)); len(bufString) < int(lnString) {
+		p.err = errors.New("Not enough bytes in buffer")
+		return p
+	}
+
+	(*value) = string(bufString)
+
+	return p
+}
+
+func (p *Processor) ReadStringEOF(value *string) *Processor {
+	str, err := p.buffer.ReadString(0x00)
+	if err != nil {
+		p.err = errors.New("Not enough bytes in buffer")
+		return p
+	}
+
+	(*value) = str
+
+	return p
+}
+
+func (p *Processor) ReadStringWithLen(ln int32, value *string) *Processor {
+	bufString := make([]byte, ln)
+	if bufString = p.buffer.Next(int(ln)); len(bufString) < int(ln) {
 		p.err = errors.New("Not enough bytes in buffer")
 		return p
 	}
