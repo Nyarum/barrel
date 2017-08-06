@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	LittleEndian = iota
-	BigEndian
+	BigEndian = iota
+	LittleEndian
 )
 
 type (
@@ -26,7 +26,7 @@ type (
 func NewProcessor(buf []byte) *Processor {
 	processor := new(Processor)
 	processor.buffer = bytes.NewBuffer(buf)
-	processor.endian = LittleEndian
+	processor.endian = BigEndian
 
 	return processor
 }
@@ -46,9 +46,14 @@ func (p *Processor) Bytes() []byte {
 	return p.buffer.Bytes()
 }
 
+// Bytes method to copy []byte from buffer
+func (p *Processor) Clone() []byte {
+	return append([]byte(nil), p.Bytes()...)
+}
+
 // Reset method for reset buffer
 func (p *Processor) Reset() {
-	p.buffer.Reset()
+	p.buffer.Next(p.buffer.Len())
 }
 
 // Endian method for get current endian number
@@ -234,6 +239,8 @@ func (p *Processor) ReadString(value *string) *Processor {
 		p.err = errors.New("Not enough bytes in buffer")
 		return p
 	}
+
+	bufString = bytes.TrimSuffix(bufString, []byte{0x00})
 
 	(*value) = string(bufString)
 
