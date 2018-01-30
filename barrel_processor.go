@@ -70,6 +70,16 @@ func (p *Processor) SetEndian(endian int) *Processor {
 	return p
 }
 
+// WriteToBuffer writes bytes to the buffer
+func (p *Processor) WriteToBuffer(buf []byte) error {
+	_, err := p.buffer.Write(buf)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (p *Processor) ReadInt8(value *int8) *Processor {
 	bufInt8 := make([]byte, 1)
 	if bufInt8 = p.buffer.Next(1); len(bufInt8) < 1 {
