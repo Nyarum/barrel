@@ -14,6 +14,11 @@ const (
 	LittleEndian
 )
 
+var (
+	// ErrNotEnoughBytes represents about not enough bytes in buffer
+	ErrNotEnoughBytes = errors.New("Not enough bytes in buffer")
+)
+
 type (
 	// Processor struct for network library
 	Processor struct {
@@ -70,6 +75,18 @@ func (p *Processor) SetEndian(endian int) *Processor {
 	return p
 }
 
+func (p *Processor) Skip(ln int) *Processor {
+	p.buffer.Next(ln)
+
+	return p
+}
+
+func (p *Processor) ClearError() *Processor {
+	p.err = nil
+
+	return p
+}
+
 // WriteToBuffer writes bytes to the buffer
 func (p *Processor) WriteToBuffer(buf []byte) error {
 	_, err := p.buffer.Write(buf)
@@ -83,7 +100,7 @@ func (p *Processor) WriteToBuffer(buf []byte) error {
 func (p *Processor) ReadInt8(value *int8) *Processor {
 	bufInt8 := make([]byte, 1)
 	if bufInt8 = p.buffer.Next(1); len(bufInt8) < 1 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -95,7 +112,7 @@ func (p *Processor) ReadInt8(value *int8) *Processor {
 func (p *Processor) ReadInt16(value *int16) *Processor {
 	bufInt16 := make([]byte, 2)
 	if bufInt16 = p.buffer.Next(2); len(bufInt16) < 2 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -111,7 +128,7 @@ func (p *Processor) ReadInt16(value *int16) *Processor {
 func (p *Processor) ReadInt32(value *int32) *Processor {
 	bufInt := make([]byte, 4)
 	if bufInt = p.buffer.Next(4); len(bufInt) < 4 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -127,7 +144,7 @@ func (p *Processor) ReadInt32(value *int32) *Processor {
 func (p *Processor) ReadInt64(value *int64) *Processor {
 	bufInt64 := make([]byte, 8)
 	if bufInt64 = p.buffer.Next(8); len(bufInt64) < 8 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -143,7 +160,7 @@ func (p *Processor) ReadInt64(value *int64) *Processor {
 func (p *Processor) ReadUint8(value *uint8) *Processor {
 	bufUint8 := make([]byte, 1)
 	if bufUint8 = p.buffer.Next(1); len(bufUint8) < 1 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -155,7 +172,7 @@ func (p *Processor) ReadUint8(value *uint8) *Processor {
 func (p *Processor) ReadUint16(value *uint16) *Processor {
 	bufUint16 := make([]byte, 2)
 	if bufUint16 = p.buffer.Next(2); len(bufUint16) < 2 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -171,7 +188,7 @@ func (p *Processor) ReadUint16(value *uint16) *Processor {
 func (p *Processor) ReadUint32(value *uint32) *Processor {
 	bufUint32 := make([]byte, 4)
 	if bufUint32 = p.buffer.Next(4); len(bufUint32) < 4 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -187,7 +204,7 @@ func (p *Processor) ReadUint32(value *uint32) *Processor {
 func (p *Processor) ReadUint64(value *uint64) *Processor {
 	bufUint64 := make([]byte, 8)
 	if bufUint64 = p.buffer.Next(8); len(bufUint64) < 8 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -203,7 +220,7 @@ func (p *Processor) ReadUint64(value *uint64) *Processor {
 func (p *Processor) ReadFloat32(value *float32) *Processor {
 	bufFloat32 := make([]byte, 4)
 	if bufFloat32 = p.buffer.Next(4); len(bufFloat32) < 4 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -219,7 +236,7 @@ func (p *Processor) ReadFloat32(value *float32) *Processor {
 func (p *Processor) ReadFloat64(value *float64) *Processor {
 	bufFloat64 := make([]byte, 8)
 	if bufFloat64 = p.buffer.Next(8); len(bufFloat64) < 8 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -236,7 +253,7 @@ func (p *Processor) ReadString(value *string) *Processor {
 	var lnString uint16
 	bufLenString := make([]byte, 2)
 	if bufLenString = p.buffer.Next(2); len(bufLenString) < 2 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -248,7 +265,7 @@ func (p *Processor) ReadString(value *string) *Processor {
 
 	bufString := make([]byte, lnString)
 	if bufString = p.buffer.Next(int(lnString)); len(bufString) < int(lnString) {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -263,7 +280,7 @@ func (p *Processor) ReadString1251(value *string) *Processor {
 	var lnString uint16
 	bufLenString := make([]byte, 2)
 	if bufLenString = p.buffer.Next(2); len(bufLenString) < 2 {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -275,7 +292,7 @@ func (p *Processor) ReadString1251(value *string) *Processor {
 
 	bufString := make([]byte, lnString)
 	if bufString = p.buffer.Next(int(lnString)); len(bufString) < int(lnString) {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -295,7 +312,7 @@ func (p *Processor) ReadString1251(value *string) *Processor {
 func (p *Processor) ReadStringEOF(value *string) *Processor {
 	str, err := p.buffer.ReadString(0x00)
 	if err != nil {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -307,7 +324,7 @@ func (p *Processor) ReadStringEOF(value *string) *Processor {
 func (p *Processor) ReadStringWithLen(ln int32, value *string) *Processor {
 	bufString := make([]byte, ln)
 	if bufString = p.buffer.Next(int(ln)); len(bufString) < int(ln) {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -319,7 +336,7 @@ func (p *Processor) ReadStringWithLen(ln int32, value *string) *Processor {
 func (p *Processor) ReadBytes(value *[]byte, ln int) *Processor {
 	bufBytes := make([]byte, ln)
 	if bufBytes = p.buffer.Next(int(ln)); len(bufBytes) < int(ln) {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
@@ -331,7 +348,7 @@ func (p *Processor) ReadBytes(value *[]byte, ln int) *Processor {
 func (p *Processor) ReadArray(value *[]byte, ln int) *Processor {
 	bufBytes := make([]byte, ln)
 	if bufBytes = p.buffer.Next(int(ln)); len(bufBytes) < int(ln) {
-		p.err = errors.New("Not enough bytes in buffer")
+		p.err = ErrNotEnoughBytes
 		return p
 	}
 
